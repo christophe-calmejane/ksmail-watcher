@@ -1,0 +1,65 @@
+{
+  "logLevel": "info",
+  "stateFile": "/state/state.json",
+
+  "broker": {
+    "url": "https://ksmail-broker.kikisoft.com",
+    "devices": {
+      "iPhone": {
+        "installationSecret": "PASTE THE INSTALLATION SECRET KSMAIL SHOWS",
+        "encryptionKey": "PASTE THE ENCRYPTION KEY KSMAIL SHOWS"
+      }
+    }
+  },
+
+  "notifications": {
+    "preview": "full",
+    "expirationSeconds": 3600,
+    "sound": "default"
+  },
+
+  "maxCatchUpPerMailbox": 5,
+  "catchUpMaxAgeHours": 12,
+  "pollSeconds": 120,
+
+  "accounts": [
+    {
+      "id": "icloud",
+      "displayName": "Personal",
+      "address": "me@icloud.com",
+      "host": "imap.mail.me.com",
+      "port": 993,
+      "auth": { "type": "password", "password": "xxxx-xxxx-xxxx-xxxx" },
+      "mailboxes": ["INBOX"]
+    },
+    {
+      "id": "gmail",
+      "displayName": "Gmail",
+      "address": "me@gmail.com",
+      "host": "imap.gmail.com",
+      "port": 993,
+      "auth": {
+        "type": "oauth",
+        "provider": "google",
+        "clientId": "XXXXXXXX.apps.googleusercontent.com",
+        "clientSecret": "PUT THE DESKTOP CLIENT SECRET HERE"
+      },
+      "mailboxes": ["INBOX"]
+    },
+    {
+      "id": "outlook",
+      "displayName": "Outlook",
+      "address": "me@outlook.com",
+      "host": "outlook.office365.com",
+      "port": 993,
+      "enabled": false,
+      "auth": {
+        "type": "oauth",
+        "provider": "microsoft",
+        "clientId": "PUT THE AZURE APPLICATION ID HERE",
+        "tenant": "common"
+      },
+      "mailboxes": ["INBOX"]
+    }
+  ]
+}

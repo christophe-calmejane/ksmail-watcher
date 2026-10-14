@@ -1,0 +1,29 @@
+# ksmail-watcher on a Raspberry Pi.
+#
+#   mkdir -p config state && chown 1000:1000 state
+#   cp config.example.json config/config.json   (then edit it)
+#   docker compose up -d && docker compose logs -f
+#
+# No ports are published, and there is no "ports:" section: the watcher never listens. Everything it does is outgoing.
+services:
+  ksmail-watcher:
+    build: .
+    image: ksmail-watcher:latest
+    container_name: ksmail-watcher
+    restart: unless-stopped
+    environment:
+      KSMAIL_WATCHER_CONFIG: /config/config.json
+      TZ: ${TZ:-UTC}
+    volumes:
+      # The configuration, read only. It is the only file there, and it holds no Apple key of any kind: only your mail credentials and your devices' secrets and encryption keys.
+      - ./config:/config:ro
+      # The UID marks and the rotated refresh tokens. Losing it means one silent pass per mailbox, not a broken watcher, but a Pi that reboots weekly should keep it.
+      - ./state:/state
+    # A Raspberry Pi 4 has 1 GB and runs other things. The watcher settles at about 60 MB and peaks around 80 MB coming back from a long outage (docs/DESIGN.md, "Memory"), so this ceiling is three times what it needs and still far from starving the Pi. Raise it rather than remove it: a limit is what turns "the watcher ate the Pi" into "the watcher restarted".
+    mem_limit: 256m
+    # A month of "still here" lines must not fill an SD card.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

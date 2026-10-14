@@ -1,0 +1,11 @@
+node_modules
+config.json
+config
+state
+test
+docs
+scripts
+.git
+.github
+*.p8
+*.pem

@@ -1,0 +1,25 @@
+{
+	"name": "ksmail-watcher",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Instant push notifications for ksMail: watches your IMAP mailboxes with IDLE and sends an end-to-end encrypted notification to your devices when mail arrives.",
+	"license": "MIT",
+	"author": "Christophe Calmejane",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/christophe-calmejane/ksmail-watcher.git"
+	},
+	"homepage": "https://github.com/christophe-calmejane/ksmail-watcher#readme",
+	"type": "module",
+	"bin": {
+		"ksmail-watcher": "./bin/ksmail-watcher.js"
+	},
+	"scripts": {
+		"start": "node bin/ksmail-watcher.js run",
+		"test": "node --test"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"dependencies": {}
+}

@@ -1,0 +1,61 @@
+# ksmail-watcher, without Docker.
+#
+# scripts/install.sh installs this file, with the path of the node it found, and everything around it (the user, /opt, /etc, /var/lib). By hand it would be:
+#
+#   sudo useradd --system --home-dir /var/lib/ksmail-watcher --no-create-home \
+#        --shell /usr/sbin/nologin ksmail
+#   sudo cp -r . /opt/ksmail-watcher
+#   sudo install -d -m 700 -o ksmail -g ksmail /etc/ksmail-watcher /var/lib/ksmail-watcher
+#   sudo cp config.example.json /etc/ksmail-watcher/config.json   (then edit:
+#        "stateFile": "/var/lib/ksmail-watcher/state.json")
+#   sudo chown ksmail:ksmail /etc/ksmail-watcher/config.json
+#   sudo chmod 600 /etc/ksmail-watcher/config.json
+#   sudo cp systemd/ksmail-watcher.service /etc/systemd/system/
+#   sudo systemctl enable --now ksmail-watcher
+#
+[Unit]
+Description=ksMail push watcher (IMAP IDLE to the ksMail broker)
+Documentation=https://github.com/christophe-calmejane/ksmail-watcher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ksmail
+Group=ksmail
+ExecStart=/usr/bin/node /opt/ksmail-watcher/bin/ksmail-watcher.js run
+Environment=KSMAIL_WATCHER_CONFIG=/etc/ksmail-watcher/config.json
+Environment=NODE_ENV=production
+StateDirectory=ksmail-watcher
+# The state file holds the OAuth refresh tokens: the service user only.
+StateDirectoryMode=0700
+WorkingDirectory=/var/lib/ksmail-watcher
+Restart=always
+RestartSec=10
+# The state file is saved on the way out, so give it the time.
+KillSignal=SIGTERM
+TimeoutStopSec=20
+
+# A Raspberry Pi 4 has 1 GB and runs other things. The watcher settles at about 60 MB and peaks around 80 MB coming back from a long outage (docs/DESIGN.md, "Memory"). MemoryHigh puts the kernel to work reclaiming before anything is killed; MemoryMax is the backstop that turns a runaway into one restart instead of a Pi that stops answering. Raise them rather than remove them.
+MemoryAccounting=yes
+MemoryHigh=192M
+MemoryMax=320M
+
+# The watcher opens outgoing sockets and writes one JSON file. Nothing else is needed, so nothing else is allowed.
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=no
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

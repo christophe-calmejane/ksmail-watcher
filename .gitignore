@@ -1,0 +1,9 @@
+node_modules/
+# Never commit a real configuration: it holds mail passwords, OAuth refresh tokens, and the secrets and encryption keys of your devices.
+config.json
+config/
+state/
+# Key files have no business in this folder; this is a safety net.
+*.p8
+*.pem
+.DS_Store
